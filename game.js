@@ -10,17 +10,19 @@ class Player {
 
   attack(monster) {
     monster.hp -= this.ad;
+    return `${this.ad}의 데미지로 공격`;
   }
 }
 
 class Monster {
-  constructor() {
-    this.hp = 100;
-    this.ad = 2;
+  constructor(stage) {
+    this.hp = 100 + (stage - 1) * 5;
+    this.ad = 2 + (stage - 1) * 3;
   }
 
   attack(player) {
     player.hp -= this.ad;
+    return `${this.ad}의 데미지로 공격`;
   }
 }
 
@@ -49,7 +51,7 @@ const battle = async (stage, player, monster) => {
 
     console.log(
       chalk.green(
-        `\n1. 공격한다 2. 아무것도 하지않는다.`,
+        `\n1. 공격한다 2. 아무것도 하지않는다. 3. RUN`,
       ),
     );
     const choice = readlineSync.question('당신의 선택은? ');
@@ -61,19 +63,18 @@ const battle = async (stage, player, monster) => {
     } else if (choice === "1") {
       logs.pop();
       logs.pop();
-      logs.push(chalk.red(`플레이어가 ${choice}로 공격했다`));
-      monster.hp = monster.hp - player.ad;
-      logs.push(chalk.red(`몬스터가 공격했다`));
-      player.hp = player.hp - monster.ad;
+      logs.push(chalk.red(player.attack(monster)));
+      logs.push(chalk.red(monster.attack(player)));
     } else if (choice === "2") {
       logs.pop();
       logs.pop();
-      logs.push(chalk.red(`${choice}로 대기`))
-      logs.push(chalk.red(`몬스터가 공격했다`));
-      player.hp = player.hp - monster.ad;
+      logs.push(chalk.red(`${choice}를 선택해 대기`))
+      logs.push(chalk.red(monster.attack(player)));
     } else if (choice === "3") {
-      logs.push(chalk.red(`${choice}로 도망`))
+      logs.push(chalk.red(`${choice}을 선택해 도망`))
       break;
+    } else {
+      logs.push(chalk.red(`잘못된 선택입니다.`));
     }
 
     if (monster.hp <= 0) {
