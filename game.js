@@ -53,6 +53,7 @@ const battle = async (stage, player, monster) => {
 
     // 플레이어의 선택에 따라 다음 행동 처리
     logs.push(chalk.green(`${choice}를 선택하셨습니다.`));
+    player.hp -= 99;
   }
   
 };
