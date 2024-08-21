@@ -17,5 +17,6 @@
   "devDependencies": {
     "prettier": "^3.3.3"
   },
-  "description": ""
+  "description": "",
+  "type": "module"
 }

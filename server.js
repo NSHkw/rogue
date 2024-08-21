@@ -1,5 +1,5 @@
-import chalk from chalk;
-import figlet from figlet;
+import chalk from 'chalk';
+import figlet from 'figlet';
 import readlineSync from 'readline-sync';
 import {startGame} from "./game.js";
 
