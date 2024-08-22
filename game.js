@@ -10,7 +10,12 @@ class Player {
 
   attack(monster) {
     monster.hp -= this.ad;
-    return `${this.ad}의 데미지로 공격`;
+    return `${this.ad}의 데미지로 몬스터를 공격`;
+  }
+
+  levelUp() {
+    this.hp += 11;
+    this.ad += 2;
   }
 }
 
@@ -22,7 +27,7 @@ class Monster {
 
   attack(player) {
     player.hp -= this.ad;
-    return `${this.ad}의 데미지로 공격`;
+    return `${this.ad}의 데미지로 플레이어를 공격`;
   }
 }
 
@@ -42,12 +47,17 @@ function displayStatus(stage, player, monster) {
 
 const battle = async (stage, player, monster) => {
   let logs = [];
-
+  let turncount = 1;
   while (player.hp > 0) {
     console.clear();
     displayStatus(stage, player, monster);
 
+    console.log(chalk.blue(
+      `현재 ${turncount}턴, 플레이어 사이드 선택`,
+    ))
+
     logs.forEach((log) => console.log(log));
+    logs = [];
 
     console.log(
       chalk.green(
@@ -61,39 +71,25 @@ const battle = async (stage, player, monster) => {
       console.log("프로그램 종료");
       process.exit(0);
     } else if (choice === "1") {
-      logs.pop();
-      logs.pop();
       logs.push(chalk.red(player.attack(monster)));
-      logs.push(chalk.red(monster.attack(player)));
+      if (monster.hp <= 0) {
+        console.log(chalk.green("몬스터를 물리쳤습니다!"));
+        return 1;
+      } else {
+        logs.push(chalk.red(monster.attack(player)));
+      }
     } else if (choice === "2") {
-      logs.pop();
-      logs.pop();
       logs.push(chalk.red(`${choice}를 선택해 대기`))
       logs.push(chalk.red(monster.attack(player)));
     } else if (choice === "3") {
       logs.push(chalk.red(`${choice}을 선택해 도망`))
-      break;
+      return 2;
     } else {
       logs.push(chalk.red(`잘못된 선택입니다.`));
     }
-
-    if (monster.hp <= 0) {
-      console.log(chalk.green("몬스터를 물리쳤습니다!"));
-      break;
-    }
+    turncount++;
   }
-  if (stage === 10) {
-    console.log(
-      chalk.cyan(
-        figlet.textSync('RL- Javascript CLEAR', {
-          font: 'Standard',
-          horizontalLayout: 'default',
-          verticalLayout: 'default'
-        })
-      )
-    );
-  }
-
+  return 0;
 };
 
 export async function startGame() {
@@ -103,14 +99,36 @@ export async function startGame() {
 
   while (stage <= 10) {
     const monster = new Monster(stage);
-    await battle(stage, player, monster);
+    const result = await battle(stage, player, monster);
+
+    if (stage <= 10) {
+      console.log(`${stage}를 클리어 했다`)
+      readlineSync.question(chalk.yellowBright(`\n계속하려면 엔터를 누르세요...`));
+    }
 
     // 스테이지 클리어 및 보상
-    player.hp += 11;
-    player.ad += 2;
+    if (result === 1) {
+      player.levelUp();
+      stage++;
+    } else if (result === 2) {
+      console.log('플레이어가 도망을 쳤다');
+      stage++;
+    } else {
+      console.log(chalk.red("게임 오버!"));
+      break;
+    }
 
     //게임 종료 조건
-
-    stage++;
+    if (stage === 10) {
+      console.log(
+        chalk.cyan(
+          figlet.textSync('RL- Javascript CLEAR', {
+            font: 'Standard',
+            horizontalLayout: 'default',
+            verticalLayout: 'default'
+          })
+        )
+      );
+    }
   }
 }
