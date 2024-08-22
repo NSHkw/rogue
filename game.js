@@ -12,29 +12,29 @@ class Player {
 
   attack(monster) {
     const ddabul = Math.random();
-    if(ddabul > 0.5){
+    if (ddabul > 0.5) {
       monster.hp = monster.hp - (this.ad * 2);
       return `${this.ad}의 데미지로 몬스터를 공격 이후
 연속베기! ${this.ad}의 데미지로 몬스터를 추가로 공격
 `
-    } else{
+    } else {
       monster.hp -= this.ad;
       return `${this.ad}의 데미지로 몬스터를 공격
 `
     }
-    
+
   }
 
   levelUp() {
     this.hp += 11;
     this.ad += 2;
     this.shieldproadd += 0.08;
-    this.runproadd += Math.round(Math.random()*2)*0.1;
+    this.runproadd += Math.round(Math.random() * 2) * 0.1;
   }
 
   shield() {
     const shieldpro = Math.random();
-    if(shieldpro < this.shieldproadd){
+    if (shieldpro < this.shieldproadd) {
       return true; // 방어 성공
     } else {
       return false; // 방어 실패
@@ -43,7 +43,7 @@ class Player {
 
   run() {
     const runpro = Math.random();
-    if(runpro < this.runproadd){
+    if (runpro < this.runproadd) {
       return true; // 도망 성공
     } else {
       return false; //도망 실패
@@ -69,10 +69,10 @@ function displayStatus(stage, player, monster) {
   console.log(
     chalk.cyanBright(`| Stage: ${stage} `) +
     chalk.blueBright(
-      `| 플레이어 정보, ${player.hp}, ${player.ad}`,
+      `| 플레이어 정보, 플레이어 체력 ${player.hp}, 플레이어 공격력 ${player.ad}`,
     ) +
     chalk.redBright(
-      `| 몬스터 정보 |, ${monster.hp}, ${monster.ad}`,
+      `| 몬스터 정보 |, 몬스터 체력 ${monster.hp}, 몬스터 공격력 ${monster.ad}`,
     ),
   );
   console.log(chalk.magentaBright(`=====================\n`));
@@ -85,8 +85,8 @@ const battle = async (stage, player, monster) => {
     console.clear();
     displayStatus(stage, player, monster);
 
-    console.log(chalk.blue(`현재 ${turncount}턴, 플레이어 사이드 선택`,));
-    
+    console.log(chalk.blue(`현재 ${turncount}턴, 플레이어 사이드 선택`));
+
     logs.forEach((log) => console.log(log));
     logs = [];
 
@@ -103,7 +103,7 @@ const battle = async (stage, player, monster) => {
       process.exit(0);
     }
     else if (choice === "1") {
-      logs.push(chalk.red(player.attack(monster))+chalk.bgCyan(`=====================`));
+      logs.push(chalk.red(player.attack(monster)) + chalk.bgCyan(`=====================`));
       if (monster.hp <= 0) {
         console.log(chalk.green("몬스터를 물리쳤습니다!"));
         return 1;
@@ -113,14 +113,14 @@ const battle = async (stage, player, monster) => {
     }
     else if (choice === "2") {
       logs.push(chalk.red(`${choice}를 선택해 막기`));
-      if(player.shield()){
-        logs.push((chalk.blue(`${Math.round(player.shieldproadd*100)}% 확률로 막기 성공`))+`
+      if (player.shield()) {
+        logs.push((chalk.blue(`${Math.round(player.shieldproadd * 100)}% 확률로 막기 성공`)) + `
 `
-+chalk.bgCyan(`=====================`));
+          + chalk.bgCyan(`=====================`));
       } else {
-        logs.push((chalk.blue(`${Math.round((1 - player.shieldproadd)*100)}% 확률로 막기 실패`))+`
+        logs.push((chalk.blue(`${Math.round((1 - player.shieldproadd) * 100)}% 확률로 막기 실패`)) + `
 `
-+chalk.bgCyan(`=====================`));
+          + chalk.bgCyan(`=====================`));
         logs.push(chalk.red(monster.attack(player)));
       }
     }
@@ -138,11 +138,10 @@ const battle = async (stage, player, monster) => {
       logs.push(chalk.red(`잘못된 선택입니다.`));
     }
     turncount++;
-    if(player.hp <= 0){
+    if (player.hp <= 0) {
       return 0;
     }
   }
-  
 };
 
 export async function startGame() {
