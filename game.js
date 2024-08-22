@@ -11,8 +11,18 @@ class Player {
   }
 
   attack(monster) {
-    monster.hp -= this.ad;
-    return `${this.ad}의 데미지로 몬스터를 공격`;
+    const ddabul = Math.random();
+    if(ddabul > 0.5){
+      monster.hp = monster.hp - (this.ad * 2);
+      return `${this.ad}의 데미지로 몬스터를 공격 이후
+연속베기! ${this.ad}의 데미지로 몬스터를 추가로 공격
+`
+    } else{
+      monster.hp -= this.ad;
+      return `${this.ad}의 데미지로 몬스터를 공격
+`
+    }
+    
   }
 
   levelUp() {
@@ -93,8 +103,7 @@ const battle = async (stage, player, monster) => {
       process.exit(0);
     }
     else if (choice === "1") {
-      logs.push(chalk.red(player.attack(monster)));
-
+      logs.push(chalk.red(player.attack(monster))+chalk.bgCyan(`=====================`));
       if (monster.hp <= 0) {
         console.log(chalk.green("몬스터를 물리쳤습니다!"));
         return 1;
@@ -105,9 +114,13 @@ const battle = async (stage, player, monster) => {
     else if (choice === "2") {
       logs.push(chalk.red(`${choice}를 선택해 막기`));
       if(player.shield()){
-        logs.push(chalk.blue(`${Math.round(player.shieldproadd*100)}% 확률로 막기 성공`));
+        logs.push((chalk.blue(`${Math.round(player.shieldproadd*100)}% 확률로 막기 성공`))+`
+`
++chalk.bgCyan(`=====================`));
       } else {
-        logs.push(chalk.blue(`${Math.round((1 - player.shieldproadd)*100)}% 확률로 막기 실패`));
+        logs.push((chalk.blue(`${Math.round((1 - player.shieldproadd)*100)}% 확률로 막기 실패`))+`
+`
++chalk.bgCyan(`=====================`));
         logs.push(chalk.red(monster.attack(player)));
       }
     }
