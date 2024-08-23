@@ -4,32 +4,37 @@ import figlet from 'figlet';
 
 class Player {
   constructor() {
+    this.maxhp = 100;
     this.hp = 100;
-    this.ad = 7;
+    this.ad = 5;
+    this.ddabulad = 0.3;
     this.shieldproadd = 0.2;
     this.runproadd = 0.1;
   }
 
   attack(monster) {
     const ddabul = Math.random();
-    if (ddabul > 0.5) {
+    let resultmessage;
+
+    if (ddabul < this.ddabulad) {
       monster.hp = monster.hp - (this.ad * 2);
-      return `${this.ad}의 데미지로 몬스터를 공격 이후
+      resultmessage = `${this.ad}의 데미지로 몬스터를 공격 이후
 연속베기! ${this.ad}의 데미지로 몬스터를 추가로 공격
 `
     } else {
       monster.hp -= this.ad;
-      return `${this.ad}의 데미지로 몬스터를 공격
+      resultmessage = `${this.ad}의 데미지로 몬스터를 공격
 `
     }
-
+    return { resultmessage };
   }
-
   levelUp() {
-    this.hp += 11;
+    this.maxhp += 15;
+    this.hp = this.maxhp;
     this.ad += 2;
-    this.shieldproadd += 0.08;
-    this.runproadd += Math.round(Math.random() * 2) * 0.1;
+    this.ddabulad += ((Math.random()*0.03) + 0.01);
+    this.shieldproadd += ((Math.random()*0.02) + 0.01);
+    this.runproadd += ((Math.random()*0.015) + 0.005);
   }
 
   shield() {
@@ -54,7 +59,7 @@ class Player {
 class Monster {
   constructor(stage) {
     this.hp = 100 + (stage - 1) * (Math.ceil(Math.random() * 5) + 1);
-    this.ad = 2 + (stage - 1) * (Math.ceil(Math.random() * 3) + 1);
+    this.ad = 2 + (stage - 1) * (Math.ceil(Math.random() * 2) + 1);
   }
 
   attack(player) {
@@ -92,7 +97,7 @@ const battle = async (stage, player, monster) => {
 
     console.log(
       chalk.green(
-        `\n1. 공격한다 2. 막기 3. RUN`,
+        `\n1. 공격한다(연속 공격 ${Math.floor(100 * player.ddabulad)}%) 2. 막기 (${Math.floor(100*player.shieldproadd)}%) 3. RUN(${Math.floor(100*player.runproadd)}%)`,
       ),
     );
     const choice = readlineSync.question('당신의 선택은? ');
@@ -103,7 +108,7 @@ const battle = async (stage, player, monster) => {
       process.exit(0);
     }
     else if (choice === "1") {
-      logs.push(chalk.red(player.attack(monster)) + chalk.bgCyan(`=====================`));
+      logs.push(chalk.red(player.attack(monster).resultmessage) + chalk.bgCyan(`=====================`));
       if (monster.hp <= 0) {
         console.log(chalk.green("몬스터를 물리쳤습니다!"));
         return 1;
@@ -118,7 +123,7 @@ const battle = async (stage, player, monster) => {
 `
           + chalk.bgCyan(`=====================`));
       } else {
-        logs.push((chalk.blue(`${Math.round((1 - player.shieldproadd) * 100)}% 확률로 막기 실패`)) + `
+        logs.push((chalk.blue(`막기 실패`)) + `
 `
           + chalk.bgCyan(`=====================`));
         logs.push(chalk.red(monster.attack(player)));
@@ -130,7 +135,7 @@ const battle = async (stage, player, monster) => {
         logs.push(chalk.blue(`${Math.round(player.runproadd * 100)}% 확률로 도망 성공`));
         return 2;
       } else {
-        logs.push(chalk.blue(`${Math.round((1 - player.runproadd) * 100)}% 확률로 도망 실패`));
+        logs.push(chalk.blue(`도망 실패, 도망 치지마 맞서 싸워, 넌 우리의 자존심이야!!!!!!`));
         logs.push(chalk.red(monster.attack(player)));
       }
     }
